@@ -1,0 +1,65 @@
+# 服务端口
+PORT=3010
+
+# 日志格式 (tiny, combined, common, dev, short)
+MORGAN_FORMAT=tiny
+
+# API Key与Cookie映射关系 (JSON格式)
+# 格式: {"自定义API Key": "Cookie值"} 或 {"自定义API Key": ["Cookie值1", "Cookie值2"]}
+API_KEYS={"sk-cursor-123":"user_xxxxxxx","sk-cursor-456":["user_yyyyyyy","user_zzzzzzz"]}
+
+# 轮询策略 (random 或 round-robin)
+ROTATION_STRATEGY=round-robin
+
+# Cursor校验和 (可选)
+# x-cursor-checksum=xxxxxxxx 
+
+# 自动刷新Cookie设置
+# 是否启用自动刷新Cookie (true 或 false)
+ENABLE_AUTO_REFRESH=true
+
+# 自动刷新Cookie的定时规则 (Cron表达式)
+# 默认每6小时执行一次
+REFRESH_CRON=0 */6 * * *
+
+# 每个API Key最小Cookie数量
+# 当Cookie数量低于此值时，会自动尝试刷新
+MIN_COOKIE_COUNT=1000
+
+# Cookie刷新模式
+# replace: 每次刷新都将现有cookie全部标记为无效并替换成新cookie（默认）
+# append: 保留现有cookie，仅追加新cookie
+COOKIE_REFRESH_MODE=replace
+
+# GitHub 仓库信息
+GITHUB_OWNER=your_name
+GITHUB_REPO=Cursor-Register-fix
+
+# GitHub Token (用于从GitHub Actions下载Artifact)
+# 需要有repo权限
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# GitHub Actions 工作流ID
+# 用于触发工作流程
+GITHUB_WORKFLOW_ID=cursor_register.yml
+
+# 是否自动触发工作流
+# 设置为true时，会自动触发工作流而不是仅获取最新结果
+TRIGGER_WORKFLOW=true
+
+# 工作流参数设置 目前只支持gmail，outlook过于复杂，暂时不支持
+# 注册账号数量
+REGISTER_NUMBER=1
+# 最大并发工作线程数
+REGISTER_MAX_WORKERS=1
+# 邮箱服务器类型 (TempEmail 或 IMAP)
+REGISTER_EMAIL_SERVER=IMAP
+# 是否将账号令牌注入到OneAPI (true 或 false)
+REGISTER_INGEST_TO_ONEAPI=false
+# 是否上传账号信息到Artifact (true 或 false)
+REGISTER_UPLOAD_ARTIFACT=true
+# 是否从config.yaml读取邮箱配置 (true 或 false)
+REGISTER_USE_CONFIG_FILE=false
+# 邮箱配置JSON字符串（仅在REGISTER_USE_CONFIG_FILE=false时有效）
+# 格式例如[{"email":"example@gmail.com","imap_server":"imap.gmail.com","imap_port":993,"username":"example@gmail.com","password":"your_app_password"}]
+REGISTER_EMAIL_CONFIGS=[] 
