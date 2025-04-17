@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cursor-to-openai
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "3010:3010"
+    env_file:
+      - .env

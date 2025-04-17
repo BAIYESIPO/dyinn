@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor To OpenAI - 管理员登录</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #3498db;
+            cursor: pointer;
+        }
+        #registerForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>管理员登录</h1>
+        
+        <!-- 登录表单 -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername">用户名</label>
+                <input type="text" id="loginUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">密码</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">登录</button>
+            <div id="loginMessage" class="message"></div>
+        </form>
+        
+        <!-- 注册表单 -->
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="registerUsername">用户名</label>
+                <input type="text" id="registerUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">密码</label>
+                <input type="password" id="registerPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">确认密码</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+            <button type="submit">注册</button>
+            <div id="registerMessage" class="message"></div>
+        </form>
+        
+        <div class="toggle-form" id="toggleForm">
+            还没有账号？点击注册
+        </div>
+    </div>
+
+    <script>
+        // 获取元素
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const toggleForm = document.getElementById('toggleForm');
+        const loginMessage = document.getElementById('loginMessage');
+        const registerMessage = document.getElementById('registerMessage');
+
+        // 切换表单显示
+        let isLoginForm = true;
+        toggleForm.addEventListener('click', () => {
+            isLoginForm = !isLoginForm;
+            loginForm.style.display = isLoginForm ? 'block' : 'none';
+            registerForm.style.display = isLoginForm ? 'none' : 'block';
+            toggleForm.textContent = isLoginForm ? '还没有账号？点击注册' : '已有账号？点击登录';
+            loginMessage.textContent = '';
+            registerMessage.textContent = '';
+        });
+
+        // 检查是否已有管理员账号
+        async function checkAdminExists() {
+            try {
+                const response = await fetch('/v1/admin/check');
+                const data = await response.json();
+                
+                if (data.exists) {
+                    // 如果已有管理员，显示登录表单
+                    loginForm.style.display = 'block';
+                    registerForm.style.display = 'none';
+                    toggleForm.style.display = 'none';
+                } else {
+                    // 如果没有管理员，显示注册表单
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'block';
+                    toggleForm.style.display = 'none';
+                    registerMessage.innerHTML = '<div class="info">首次使用，请注册管理员账号</div>';
+                }
+            } catch (error) {
+                console.error('检查管理员账号失败:', error);
+            }
+        }
+
+        // 登录处理
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/v1/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 登录成功，保存token并跳转
+                    localStorage.setItem('adminToken', data.token);
+                    window.location.href = '/index.html';
+                } else {
+                    loginMessage.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                loginMessage.innerHTML = '<div class="error">登录失败，请稍后重试</div>';
+            }
+        });
+
+        // 注册处理
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                registerMessage.innerHTML = '<div class="error">两次输入的密码不一致</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/v1/admin/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 注册成功，保存token并跳转
+                    localStorage.setItem('adminToken', data.token);
+                    window.location.href = '/index.html';
+                } else {
+                    registerMessage.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            } catch (error) {
+                console.error('注册失败:', error);
+                registerMessage.innerHTML = '<div class="error">注册失败，请稍后重试</div>';
+            }
+        });
+
+        // 页面加载时检查管理员账号
+        document.addEventListener('DOMContentLoaded', checkAdminExists);
+    </script>
+</body>
+</html> 

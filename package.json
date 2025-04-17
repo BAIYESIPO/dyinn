@@ -1,0 +1,39 @@
+{
+  "name": "cursor-to-openai",
+  "version": "1.3.0",
+  "description": "Cursor to OpenAPI",
+  "author": "JiuZ-Chn",
+  "private": false,
+  "main": "index.js",
+  "url": "https://github.com/JiuZ-Chn/Cursor-To-OpenAI",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.6.7",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.7",
+    "express": "4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^2.7.0",
+    "open": "^10.1.0",
+    "protobufjs": "^7.4.0",
+    "undici": "^6.21.2",
+    "uuid": "11.0.5"
+  },
+  "scripts": {
+    "proto": "npx pbjs -t static-module -w commonjs -o src/proto/message.js src/proto/message.proto",
+    "start": "node src/app.js",
+    "setup": "node setup.js",
+    "manage-emails": "node manage-emails.js",
+    "refresh-cookies": "node auto-refresh-cookies.js",
+    "refresh-cookies:force": "node auto-refresh-cookies.js --force",
+    "refresh-cookies:api": "node auto-refresh-cookies.js",
+    "manage-cookies": "node manage-invalid-cookies.js"
+  },
+  "devDependencies": {
+    "protobufjs-cli": "^1.1.3"
+  }
+}

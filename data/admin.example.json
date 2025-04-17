@@ -1,0 +1,7 @@
+{
+    "admin": {
+        "username": "your_admin_username",
+        "salt": "your_generated_salt",
+        "hash": "your_password_hash"
+    }
+} 
